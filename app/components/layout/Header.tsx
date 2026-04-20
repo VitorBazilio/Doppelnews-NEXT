@@ -40,6 +40,3 @@ export default function Header({ title }: HeaderProps) {
         </header>
     );
 }
-        </header >
-    );
-}

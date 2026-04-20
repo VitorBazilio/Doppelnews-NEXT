@@ -36,14 +36,3 @@ export default function ThemeToggle() {
         </button>
     );
 }
-
-return (
-    <button
-        type="button"
-        onClick={toggleTheme}
-        className="theme-toggle-button"
-        aria-label="Alternar tema"
-    >
-        {theme === 'light' ? '🌙' : '☀️'}
-    </button>
-);
