@@ -1,0 +1,204 @@
+/* Forms
+   Admin creation form, login and newsletter controls. */
+
+.container,
+.conteudo {
+  width: 100%;
+}
+
+.newsletter div {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.newsletter input,
+.create-form input,
+.create-form textarea,
+.create-form select,
+.login-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.newsletter input:focus,
+.create-form input:focus,
+.create-form textarea:focus,
+.login-form input:focus {
+  border-color: var(--accent-3);
+  outline: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3), transparent 72%);
+}
+
+.newsletter button,
+.create-form button,
+.login-form button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.newsletter button {
+  padding: 0 14px;
+}
+
+.create-form,
+.login-section {
+  width: min(860px, calc(100vw - 32px));
+  margin: 42px auto;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.create-form h2,
+.login-section h2 {
+  margin-bottom: 18px;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.create-form form,
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.create-form label {
+  margin-top: 4px;
+  font-weight: 800;
+}
+
+.category-picker,
+.tag-picker {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.slug-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.slug-field:focus-within {
+  border-color: var(--accent-3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3), transparent 72%);
+}
+
+.slug-field span {
+  display: grid;
+  place-items: center;
+  padding-inline: 14px;
+  border-right: 1px solid var(--border);
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.create-form .slug-field input {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.field-hint {
+  margin-top: -10px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.create-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.create-form button,
+.login-form button {
+  width: fit-content;
+  padding: 12px 18px;
+}
+
+.create-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.form-message,
+.form-error {
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.form-message {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.form-error {
+  margin: -8px 0 0;
+  border: 1px solid color-mix(in srgb, var(--danger), transparent 48%);
+  background: color-mix(in srgb, var(--danger), transparent 90%);
+  color: var(--text);
+  list-style-position: inside;
+}
+
+.tag-options,
+.category-options,
+.tag-selected,
+.category-selected,
+.custom-file-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.tag-selected,
+.category-selected {
+  min-height: 44px;
+}
+
+.tag-chip {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.tag-chip.disabled,
+.tag-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.rich-editor {
+  min-height: 220px;
+  background: var(--paper);
+}
+
+:root[data-theme="dark"] .rich-editor,
+body.theme-black .rich-editor {
+  background: #fff;
+  color: #111318;
+}

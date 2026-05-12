@@ -1,0 +1,58 @@
+/* Design tokens
+   Centralized values for color, spacing, typography, radii and shadows. */
+
+:root {
+  color-scheme: light;
+
+  --page-width: min(1560px, calc(100% - 64px));
+
+  --bg: #f5f6f8;
+  --bg-soft: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #fbfcfe;
+  --surface-2: #eef1f5;
+  --text: #111318;
+  --muted: #5d6674;
+  --faint: #87909e;
+  --border: rgba(17, 19, 24, 0.12);
+
+  --ink: #08090b;
+  --paper: #ffffff;
+  --accent: #ffd400;
+  --accent-2: #7b4dff;
+  --accent-3: #00a7ff;
+  --danger: #d94848;
+
+  --font-body: "Inter-Main", Arial, sans-serif;
+  --font-display: "PixelTitles", Impact, sans-serif;
+
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 8px 24px rgba(16, 24, 40, 0.08);
+  --shadow: 0 18px 48px rgba(16, 24, 40, 0.12);
+  --shadow-strong: 0 28px 80px rgba(8, 9, 11, 0.22);
+
+  --space-page-y: 42px;
+  --transition-fast: 160ms ease;
+}
+
+:root[data-theme="dark"],
+body.theme-black {
+  color-scheme: dark;
+
+  --bg: #08090b;
+  --bg-soft: #101215;
+  --surface: #14171c;
+  --surface-raised: #181c22;
+  --surface-2: #20252d;
+  --text: #f6f7fb;
+  --muted: #b7bfca;
+  --faint: #858e9d;
+  --border: rgba(255, 255, 255, 0.12);
+
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+  --shadow-strong: 0 28px 80px rgba(0, 0, 0, 0.55);
+}

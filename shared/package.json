@@ -1,0 +1,8 @@
+{
+  "name": "@doppelnews/shared",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./*"
+  }
+}

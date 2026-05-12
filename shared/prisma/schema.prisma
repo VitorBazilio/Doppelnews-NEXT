@@ -1,0 +1,36 @@
+// Gera o Prisma Client usado pela aplicação Next.js.
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+// Banco PostgreSQL configurado pela variável DATABASE_URL no prisma.config.ts.
+datasource db {
+  provider = "postgresql"
+}
+
+// Usuário autor das notícias publicadas no portal.
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  articles  Article[]
+}
+
+// Artigo/notícia exibido na home, no arquivo e na página de detalhe.
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(180)
+  content     String   @db.Text
+  publishedAt DateTime @default(now())
+  category    String   @default("Games")
+  tags        String[] @db.VarChar(255)
+  authorId    Int
+  headline    String?  @db.VarChar(255)
+  imageUrl    String?  @db.VarChar(255)
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}

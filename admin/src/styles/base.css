@@ -1,0 +1,66 @@
+/* Base
+   Low-level page defaults shared by every route. */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% -10%, rgba(255, 212, 0, 0.12), transparent 34rem),
+    radial-gradient(circle at 95% 8%, rgba(0, 167, 255, 0.10), transparent 28rem),
+    linear-gradient(180deg, var(--bg-soft), var(--bg));
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent), white 18%);
+  outline-offset: 3px;
+}
+
+.top-anchor {
+  display: block;
+  width: 100%;
+  height: 0;
+  scroll-margin-top: 0;
+}
+
+.DoppelTitle {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.7rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.empty-state {
+  padding: 28px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+}

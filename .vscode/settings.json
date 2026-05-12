@@ -1,0 +1,24 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/app/generated": true,
+    "**/coverage": true,
+    "**/out": true,
+    "**/build": true,
+    "**/next-env.d.ts": true,
+    "**/tsconfig.tsbuildinfo": true,
+    "**/*.log": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/app/generated": true,
+    "**/coverage": true,
+    "**/out": true,
+    "**/build": true,
+    "**/package-lock.json": true,
+    "**/tsconfig.tsbuildinfo": true
+  }
+}

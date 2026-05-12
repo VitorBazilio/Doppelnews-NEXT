@@ -1,0 +1,9 @@
+/* Admin style entry point.
+   Imports stay explicit so the panel can evolve independently from the public site. */
+@import "./variables.css";
+@import "./base.css";
+@import "./layout.css";
+@import "./forms.css";
+@import "./dashboard.css";
+@import "./editor.css";
+@import "./responsive.css";

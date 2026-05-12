@@ -1,0 +1,10 @@
+.rich-editor {
+  min-height: 220px;
+  background: var(--paper);
+}
+
+:root[data-theme="dark"] .rich-editor,
+body.theme-black .rich-editor {
+  background: #fff;
+  color: #111318;
+}
