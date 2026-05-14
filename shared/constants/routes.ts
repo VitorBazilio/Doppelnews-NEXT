@@ -2,7 +2,8 @@ const siteBaseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const adminBaseUrl = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3001";
 
 function joinUrl(baseUrl: string, path: string) {
-  return `${baseUrl.replace(/\/$/, "")}${path}`;
+  const safePath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl.replace(/\/$/, "")}${safePath}`;
 }
 
 export const siteRoutes = {
