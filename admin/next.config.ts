@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "assets.nintendo.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "shared.akamai.steamstatic.com" },
       { protocol: "https", hostname: "shared.fastly.steamstatic.com" },
     ],

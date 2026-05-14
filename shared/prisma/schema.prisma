@@ -9,28 +9,387 @@ datasource db {
   provider = "postgresql"
 }
 
-// Usuário autor das notícias publicadas no portal.
-model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  articles  Article[]
+/// Cargos possíveis dentro do painel administrativo.
+enum UserRole {
+  ADMIN
+  EDITOR
+  REDATOR
+  MODERADOR
 }
 
-// Artigo/notícia exibido na home, no arquivo e na página de detalhe.
-model Article {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
-  slug        String   @unique @db.VarChar(180)
-  content     String   @db.Text
-  publishedAt DateTime @default(now())
-  category    String   @default("Games")
-  tags        String[] @db.VarChar(255)
-  authorId    Int
-  headline    String?  @db.VarChar(255)
-  imageUrl    String?  @db.VarChar(255)
+/// Status editorial da notícia.
+enum ArticleStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+/// Plataformas para automações futuras.
+enum SocialPlatform {
+  INSTAGRAM
+  TWITTER
+  DISCORD
+  TELEGRAM
+}
+
+/// Status de uma postagem em rede social.
+enum SocialPostStatus {
+  PENDING
+  POSTED
+  FAILED
+}
+
+/// Usuário do sistema.
+/// Pode ser administrador, editor, redator ou moderador.
+model User {
+  id Int @id @default(autoincrement()) /// ID único do usuário.
+
+  name String @db.VarChar(120) /// Nome exibido no painel e no site.
+
+  username String? @unique @db.VarChar(80) /// Nome de usuário público ou interno.
+
+  email String @unique @db.VarChar(180) /// Email usado para login.
+
+  password String @db.VarChar(255) /// Senha criptografada.
+
+  avatarUrl String? @db.VarChar(255) /// Foto/avatar do usuário.
+
+  bio String? @db.Text /// Biografia curta do autor.
+
+  role UserRole @default(REDATOR) /// Cargo/permissão do usuário.
+
+  createdAt DateTime @default(now()) /// Data de criação do usuário.
+
+  updatedAt DateTime @updatedAt /// Data da última atualização.
+
+  articles Article[] /// Notícias criadas por esse usuário.
+
+  media Media[] /// Arquivos enviados por esse usuário.
+
+  sessions Session[] /// Sessões de login desse usuário.
+
+  comments Comment[] /// Comentários feitos por esse usuário, caso leitores logados existam.
+}
+
+/// Artigo/notícia exibido no portal.
+/// É a tabela principal do site.
+model Article {
+  id Int @id @default(autoincrement()) /// ID único da notícia.
+
+  title String @db.VarChar(255) /// Título principal da notícia.
+
+  slug String @unique @db.VarChar(180) /// URL amigável da notícia.
+
+  headline String? @db.VarChar(255) /// Chamada curta ou subtítulo da notícia.
+
+  excerpt String? @db.Text /// Resumo usado em cards, SEO e listagens.
+
+  content String @db.Text /// Conteúdo completo da notícia.
+
+  imageUrl String? @db.VarChar(255) /// Imagem principal da notícia.
+
+  imageAlt String? @db.VarChar(255) /// Texto alternativo da imagem principal.
+
+  status ArticleStatus @default(DRAFT) /// Status editorial da notícia.
+
+  featured Boolean @default(false) /// Define se a notícia aparece como destaque.
+
+  views Int @default(0) /// Quantidade simples de visualizações.
+
+  seoTitle String? @db.VarChar(255) /// Título SEO personalizado.
+
+  seoDescription String? @db.VarChar(300) /// Descrição SEO personalizada.
+
+  publishedAt DateTime? /// Data de publicação.
+
+  createdAt DateTime @default(now()) /// Data de criação.
+
+  updatedAt DateTime @updatedAt /// Data da última atualização.
+
+  authorId Int /// ID do autor da notícia.
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) /// Autor da notícia.
+
+  categories ArticleCategory[] /// Categorias ligadas à notícia.
+
+  tags ArticleTag[] /// Tags ligadas à notícia.
+
+  comments Comment[] /// Comentários da notícia.
+
+  games ArticleGame[] /// Jogos relacionados à notícia.
+
+  articleViews ArticleView[] /// Registros detalhados de visualizações.
+
+  socialPosts SocialPost[] /// Posts sociais gerados a partir dessa notícia.
+
+  featuredArticles FeaturedArticle[] /// Notícias destacadas em seções da home.
+}
+
+/// Categoria principal do site.
+/// Exemplo: Games, PlayStation, Xbox, Nintendo, Reviews.
+model Category {
+  id Int @id @default(autoincrement()) /// ID único da categoria.
+
+  name String @db.VarChar(100) /// Nome da categoria.
+
+  slug String @unique @db.VarChar(120) /// Slug da categoria usado na URL.
+
+  description String? @db.Text /// Descrição da categoria.
+
+  createdAt DateTime @default(now()) /// Data de criação.
+
+  updatedAt DateTime @updatedAt /// Data da última atualização.
+
+  articles ArticleCategory[] /// Notícias ligadas a essa categoria.
+}
+
+/// Tabela intermediária entre Article e Category.
+/// Permite que uma notícia tenha várias categorias.
+model ArticleCategory {
+  articleId Int /// ID da notícia.
+
+  categoryId Int /// ID da categoria.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia relacionada.
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade) /// Categoria relacionada.
+
+  @@id([articleId, categoryId])
+}
+
+/// Tag específica do site.
+/// Exemplo: GTA 6, Zelda, FromSoftware, Switch 2.
+model Tag {
+  id Int @id @default(autoincrement()) /// ID único da tag.
+
+  name String @db.VarChar(100) /// Nome da tag.
+
+  slug String @unique @db.VarChar(120) /// Slug da tag usado na URL.
+
+  createdAt DateTime @default(now()) /// Data de criação.
+
+  articles ArticleTag[] /// Notícias ligadas a essa tag.
+}
+
+/// Tabela intermediária entre Article e Tag.
+/// Permite que uma notícia tenha várias tags.
+model ArticleTag {
+  articleId Int /// ID da notícia.
+
+  tagId Int /// ID da tag.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia relacionada.
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade) /// Tag relacionada.
+
+  @@id([articleId, tagId])
+}
+
+/// Comentários feitos nas notícias.
+model Comment {
+  /// ID único do comentário.
+  id Int @id @default(autoincrement())
+
+  content String @db.Text /// Conteúdo do comentário.
+
+  guestName String? @db.VarChar(120) /// Nome do visitante, caso não exista login público.
+
+  guestEmail String? @db.VarChar(180) /// Email do visitante, caso queira moderação ou contato.
+
+  approved Boolean @default(false) /// Define se o comentário foi aprovado.
+
+  createdAt DateTime @default(now()) /// Data de criação do comentário.
+
+  articleId Int /// ID da notícia comentada.
+
+  userId Int? /// ID do usuário, caso o comentário seja de usuário logado.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia relacionada ao comentário.
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull) /// Usuário relacionado ao comentário.
+}
+
+/// Arquivos enviados no painel.
+/// Usado para imagens, banners, capas e mídia em geral.
+model Media {
+  id Int @id @default(autoincrement()) /// ID único do arquivo
+
+  filename String @db.VarChar(180) /// Nome final do arquivo salvo.
+
+  originalName String @db.VarChar(180) /// Nome original do arquivo enviado.
+
+  mimeType String @db.VarChar(80) /// Tipo do arquivo, exemplo: image/webp.
+
+  size Int /// Tamanho do arquivo em bytes.
+
+  width Int? /// Largura da imagem.
+
+  height Int? /// Altura da imagem.
+
+  alt String? @db.VarChar(255) /// Texto alternativo para acessibilidade e SEO.
+
+  path String @db.VarChar(255) /// Caminho ou URL do arquivo.
+
+  createdAt DateTime @default(now()) /// Data de envio.
+
+  uploadedById Int? /// ID do usuário que enviou o arquivo.
+
+  uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull) /// Usuário que enviou o arquivo.
+}
+
+/// Sessões de login no painel administrativo.
+model Session {
+  id Int @id @default(autoincrement()) /// ID único da sessão.
+
+  token String @unique @db.VarChar(255) /// Token da sessão.
+
+  expiresAt DateTime /// Data de expiração da sessão.
+
+  createdAt DateTime @default(now()) /// Data de criação da sessão.
+
+  userId Int /// ID do usuário logado.
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) /// Usuário dono da sessão.
+}
+
+/// Seções de destaque da home.
+/// Exemplo: Destaque Principal, Mais Lidas, Reviews.
+model FeaturedSection {
+  /// ID único da seção.
+  id Int @id @default(autoincrement())
+
+  title String @db.VarChar(120) /// Nome da seção.
+
+  slug String @unique @db.VarChar(120) /// Identificador interno da seção.
+
+  type String @db.VarChar(80) /// Tipo da seção, exemplo: hero, grid, carousel.
+
+  active Boolean @default(true) /// Define se a seção está ativa.
+
+  order Int @default(0) /// Ordem da seção na home.
+
+  articles FeaturedArticle[] /// Notícias dentro dessa seção.
+}
+
+/// Liga notícias às seções de destaque da home.
+model FeaturedArticle {
+  sectionId Int /// ID da seção.
+
+  articleId Int /// ID da notícia.
+
+  order Int @default(0) /// Ordem da notícia dentro da seção.
+
+  section FeaturedSection @relation(fields: [sectionId], references: [id], onDelete: Cascade) /// Seção relacionada.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia relacionada.
+
+  @@id([sectionId, articleId])
+}
+
+/// Cadastro de jogos.
+/// Permite relacionar notícias com jogos específicos.
+model Game {
+  id Int @id @default(autoincrement()) /// ID único do jogo.
+
+  title String @db.VarChar(180) /// Nome do jogo.
+
+  slug String @unique @db.VarChar(180) /// Slug usado na URL do jogo.
+
+  coverImage String? @db.VarChar(255) /// Imagem de capa do jogo.
+
+  developer String? @db.VarChar(120) /// Desenvolvedora do jogo.
+
+  publisher String? @db.VarChar(120) /// Publicadora do jogo.
+
+  releaseDate DateTime? /// Data de lançamento.
+
+  platforms Json? /// Plataformas em formato JSON.
+
+  genres Json? /// Gêneros em formato JSON.
+
+  score Float? /// Nota opcional do jogo.
+
+  createdAt DateTime @default(now()) /// Data de criação.
+
+  updatedAt DateTime @updatedAt /// Data da última atualização.
+
+  articles ArticleGame[] /// Notícias relacionadas ao jogo.
+}
+
+/// Tabela intermediária entre Article e Game.
+/// Permite ligar uma notícia a um ou mais jogos.
+model ArticleGame {
+  /// ID da notícia.
+  articleId Int
+
+  gameId Int /// ID do jogo.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia relacionada.
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade) /// Jogo relacionado.
+
+  @@id([articleId, gameId])
+}
+
+/// Publicações automáticas em redes sociais.
+/// Útil para futuras integrações com Instagram, X, Discord e Telegram.
+model SocialPost {
+  id Int @id @default(autoincrement()) /// ID único da postagem social.
+
+  platform SocialPlatform /// Plataforma onde será publicado.
+
+  status SocialPostStatus @default(PENDING) /// Status da publicação.
+
+  content String? @db.Text /// Texto gerado para a publicação.
+
+  response Json? /// Resposta da API da rede social.
+
+  postedAt DateTime? /// Data em que foi publicado
+
+  createdAt DateTime @default(now()) /// Data de criação do registro.
+
+  articleId Int /// ID da notícia relacionada.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia usada para gerar o post.
+}
+
+/// Visualizações detalhadas das notícias.
+/// Usado para ranking de mais lidas e analytics.
+model ArticleView {
+  id Int @id @default(autoincrement()) /// ID único da visualização.
+
+  userAgent String? @db.Text /// Navegador/dispositivo do visitante.
+
+  viewedAt DateTime @default(now()) /// Data da visualização.
+
+  articleId Int /// ID da notícia visualizada.
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade) /// Notícia visualizada.
+}
+
+/// Redirecionamentos de SEO.
+/// Evita links quebrados quando uma URL muda.
+model SeoRedirect {
+  id Int @id @default(autoincrement()) /// ID único do redirecionamento.
+
+  oldSlug String @unique @db.VarChar(180) /// URL antiga.
+
+  newSlug String @db.VarChar(180) /// URL nova.
+
+  type Int @default(301) /// Tipo do redirecionamento, exemplo: 301 ou 302.
+
+  createdAt DateTime @default(now()) /// Data de criação.
+}
+
+/// Inscritos na newsletter.
+/// Usado para envio futuro de emails com novidades.
+model NewsletterSubscriber {
+  id Int @id @default(autoincrement()) /// ID único do inscrito.
+
+  email String @unique @db.VarChar(180) /// Email cadastrado.
+
+  active Boolean @default(true) /// Define se o inscrito ainda está ativo.
+
+  createdAt DateTime @default(now()) /// Data de inscrição.
 }

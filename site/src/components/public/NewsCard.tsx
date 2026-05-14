@@ -89,13 +89,13 @@ export function ArchiveNewsCard({ article }: ArticleCardProps) {
       className={`archive-card${imageUrl ? "" : " archive-card-text-only"}`}
     >
       <ArticleImage article={article} width={420} height={260} />
-      <span>
+      <div>
         <small>
           {article.category} - {formatArticleDate(article.publishedAt)}
         </small>
         <h2>{article.title}</h2>
         <p>{article.headline}</p>
-      </span>
+      </div>
     </Link>
   );
 }

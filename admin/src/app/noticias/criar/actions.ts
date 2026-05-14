@@ -9,7 +9,7 @@ import {
   sanitizePlainText,
   stripHtml,
 } from "@doppelnews/shared/lib/security";
-import { createUniqueArticleSlug } from "@doppelnews/shared/lib/slugs";
+import { createUniqueArticleSlug, slugify } from "@doppelnews/shared/lib/slugs";
 
 type CreateNewsField =
   | "title"
@@ -56,7 +56,7 @@ function parseTags(value: string, errors: CreateNewsState["errors"]) {
     new Set(
       value
         .split(",")
-        .map((tag) => sanitizePlainText(tag, { maxLength: 255 }))
+        .map((tag) => sanitizePlainText(tag, { maxLength: 100 }))
         .filter(Boolean),
     ),
   );
@@ -79,7 +79,7 @@ export async function createNews(
   const title = sanitizePlainText(getText(formData, "title"), { maxLength: 255 });
   const requestedSlug = getText(formData, "slug");
   const category = sanitizePlainText(getText(formData, "category"), {
-    maxLength: 255,
+    maxLength: 100,
   });
   const headline = sanitizePlainText(getText(formData, "manchete"), {
     maxLength: 255,
@@ -131,6 +131,19 @@ export async function createNews(
   }
 
   const tags = parseTags(getText(formData, "tags"), errors);
+  const categorySlug = slugify(category);
+  const normalizedTags = tags.map((tagName) => ({
+    name: tagName,
+    slug: slugify(tagName),
+  }));
+
+  if (category && !categorySlug) {
+    addError(errors, "category", "Use uma categoria com letras ou nÃºmeros.");
+  }
+
+  if (normalizedTags.some((tag) => !tag.slug)) {
+    addError(errors, "tags", "Use tags com letras ou nÃºmeros.");
+  }
 
   if (Object.keys(errors).length > 0 || !publishedAt) {
     return {
@@ -169,12 +182,37 @@ export async function createNews(
     data: {
       title,
       slug,
-      category,
       headline,
       content,
       publishedAt,
-      tags,
+      status: "PUBLISHED",
       authorId: author.id,
+      categories: {
+        create: {
+          category: {
+            connectOrCreate: {
+              where: { slug: categorySlug },
+              create: {
+                name: category,
+                slug: categorySlug,
+              },
+            },
+          },
+        },
+      },
+      tags: {
+        create: normalizedTags.map((tag) => ({
+          tag: {
+            connectOrCreate: {
+              where: { slug: tag.slug },
+              create: {
+                name: tag.name,
+                slug: tag.slug,
+              },
+            },
+          },
+        })),
+      },
     },
     select: {
       id: true,
